@@ -1,46 +1,87 @@
 from pathlib import Path
 import fitz
+import re
 
 
 class ParserVouchere:
-    def __init__(self, pdf_path):
-        self.pdf_path = Path(pdf_path)
 
-    def parse(self):
-        """
-        Returnează lista liniilor utile din PDF.
-        Deocamdată NU parsează coloanele.
-        """
-        if not self.pdf_path.exists():
-            raise FileNotFoundError(self.pdf_path)
+    import re
 
-        rezultate = []
+DATE_RE = re.compile(r"\d{2}\.\d{2}\.\d{4}$")
+TIME_RE = re.compile(r"\d{2}:\d{2}:\d{2}$")
 
-        doc = fitz.open(self.pdf_path)
 
-        print(f"PDF deschis ({doc.page_count} pagini)\n")
+def parse_records(self, linii):
 
-        for nr, pagina in enumerate(doc, start=1):
-            print(f"Pagina {nr}/{doc.page_count}")
+    rezultate = []
 
-            text = pagina.get_text()
+    i = 0
 
-            for linie in text.splitlines():
+    while i < len(linii):
 
-                linie = " ".join(linie.split())
+        linie = linii[i].strip()
 
-                if not linie:
-                    continue
+        # ignorăm antetele
+        if (
+            linie == "TIP"
+            or linie.startswith("NUME")
+            or linie.startswith("Cod raport")
+        ):
+            i += 1
+            continue
 
-                # eliminăm antetele
-                if "NUME" in linie and "VCH_COD_BARE" in linie:
-                    continue
+        # trebuie să existe și linia următoare
+        if i + 1 >= len(linii):
+            break
 
-                if "Cod raport" in linie:
-                    continue
+        tip = linii[i + 1].strip()
 
-                rezultate.append(linie)
+        if not tip.lower().startswith("incasare") and not tip.lower().startswith("emitere"):
+            i += 1
+            continue
+
+        p = linie.split()
+
+        # minim:
+        # MAGAZIN POS EOD BON COD VAL DATA ORA
+        if len(p) < 8:
+            i += 2
+            continue
+
+        try:
+
+            ora = p[-1]
+            data = p[-2]
+            valoare = p[-3]
+            cod = p[-4]
+            bon = p[-5]
+            eod = p[-6]
+            pos = p[-7]
+
+            magazin = " ".join(p[:-7])
+
+            rezultate.append({
+
+                "MAGAZIN": magazin,
+                "POS": int(pos),
+                "EOD": int(eod),
+                "BON": int(bon),
+                "COD_BARE": cod,
+                "TIP": tip,
+                "VALOARE": float(valoare.replace(",", ".")),
+                "DATA": data,
+                "ORA": ora
+
+            })
+
+        except Exception:
+
+            pass
+
+        i += 2
+
+        return rezultate
 
         doc.close()
 
-        return rezultate
+        return self.parse_records(randuri)

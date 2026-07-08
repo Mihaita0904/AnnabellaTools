@@ -1,22 +1,24 @@
 from parser_vouchere import ParserVouchere
+import pandas as pd
 
 
 def main():
 
     parser = ParserVouchere("input/vouchere.pdf")
 
-    linii = parser.parse()
+    rows = parser.parse()
+
+    df = pd.DataFrame(rows)
+
+    print(df.head(20))
 
     print()
-    print("=" * 60)
-    print(f"Linii citite: {len(linii)}")
-    print("=" * 60)
+
+    print(df.info())
+
     print()
 
-    print("Primele 20 linii:\n")
-
-    for linie in linii[:20]:
-        print(linie)
+    print(f"Total inregistrari: {len(df)}")
 
 
 if __name__ == "__main__":
