@@ -1,19 +1,22 @@
-from pathlib import Path
+from parser_vouchere import ParserVouchere
 
 
 def main():
+
+    parser = ParserVouchere("input/vouchere.pdf")
+
+    linii = parser.parse()
+
+    print()
     print("=" * 60)
-    print(" AnnabellaTools v0.1")
+    print(f"Linii citite: {len(linii)}")
     print("=" * 60)
+    print()
 
-    pdf = Path("input") / "vouchere.pdf"
+    print("Primele 20 linii:\n")
 
-    if not pdf.exists():
-        print(f"\n❌ Nu am găsit fișierul:\n{pdf}")
-        return
-
-    print(f"\n✅ PDF găsit:\n{pdf}")
-    print("\nUrmătorul pas: parsarea PDF-ului...")
+    for linie in linii[:20]:
+        print(linie)
 
 
 if __name__ == "__main__":
