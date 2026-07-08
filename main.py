@@ -1,16 +1,20 @@
-from parser_vouchere import ParserVouchere
-from excel_export import ExcelExport
+from pathlib import Path
 
-PDF = "vouchere.pdf"
-OUT = "output/vouchere.xlsx"
 
 def main():
-    parser = ParserVouchere(PDF)
-    df = parser.parse()
+    print("=" * 60)
+    print(" AnnabellaTools v0.1")
+    print("=" * 60)
 
-    ExcelExport.export(df, OUT)
+    pdf = Path("input") / "vouchere.pdf"
 
-    print(f"Exportate {len(df)} înregistrări.")
+    if not pdf.exists():
+        print(f"\n❌ Nu am găsit fișierul:\n{pdf}")
+        return
+
+    print(f"\n✅ PDF găsit:\n{pdf}")
+    print("\nUrmătorul pas: parsarea PDF-ului...")
+
 
 if __name__ == "__main__":
     main()
