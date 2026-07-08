@@ -1,7 +1,7 @@
 from parser_vouchere import ParserVouchere
 from excel_export import ExcelExport
 
-PDF = "vouchere.pdf"
+PDF = "input/vouchere.pdf"
 OUT = "output/vouchere.xlsx"
 
 def main():
